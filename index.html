@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teste - Pôr do Sol</title>
+  <title>Teste - Temas do Dia</title>
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
+      min-height: 100dvh;
+      padding: 32px 16px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       font-family: system-ui, sans-serif;
@@ -17,7 +22,34 @@
       background: linear-gradient(180deg, #1e3c72, #ff7e5f 70%, #feb47b);
       text-align: center;
     }
-    .sol {
+
+    body[data-tema="tarde"] {
+      color: #163a56;
+      background: linear-gradient(180deg, #73c4ef, #c4eaff 65%, #ffe7b5);
+    }
+
+    body[data-tema="noite"] {
+      background:
+        radial-gradient(2px 2px at 14% 18%, #fff 50%, transparent 100%),
+        radial-gradient(2px 2px at 34% 10%, #fff 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 62% 19%, #fff 50%, transparent 100%),
+        radial-gradient(2px 2px at 84% 12%, #fff 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 91% 39%, #fff 50%, transparent 100%),
+        radial-gradient(2px 2px at 8% 53%, #fff 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 77% 62%, #fff 50%, transparent 100%),
+        radial-gradient(2px 2px at 20% 78%, #fff 50%, transparent 100%),
+        linear-gradient(180deg, #0b1029, #1c2854 70%, #3e4268);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .astro {
+      position: relative;
       width: 120px;
       height: 120px;
       border-radius: 50%;
@@ -25,13 +57,128 @@
       box-shadow: 0 0 60px #ffd166;
       margin-bottom: 24px;
     }
-    h1 { margin: 0 0 8px; }
-    p { margin: 0; opacity: 0.9; }
+
+    body[data-tema="tarde"] .astro {
+      background: #ffda64;
+      box-shadow: 0 0 60px rgba(255, 215, 100, 0.9);
+    }
+
+    body[data-tema="noite"] .astro {
+      background: #f2f3dd;
+      box-shadow: inset -12px -8px 0 rgba(130, 145, 175, 0.25),
+                  0 0 60px rgba(212, 224, 255, 0.5);
+    }
+
+    body[data-tema="noite"] .astro::after {
+      content: "";
+      position: absolute;
+      top: 27px;
+      left: 31px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: rgba(137, 152, 177, 0.26);
+      box-shadow: 36px 30px 0 4px rgba(137, 152, 177, 0.2),
+                  2px 48px 0 -3px rgba(137, 152, 177, 0.26);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+    }
+
+    p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    h1, p {
+      text-shadow: 0 2px 8px rgba(20, 20, 40, 0.55);
+    }
+
+    body[data-tema="tarde"] h1,
+    body[data-tema="tarde"] p {
+      text-shadow: none;
+    }
+
+    .seletor-tema {
+      display: grid;
+      gap: 8px;
+      width: min(100%, 260px);
+      margin-top: 32px;
+      padding: 14px 16px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 14px;
+      background: rgba(22, 25, 48, 0.72);
+      text-align: left;
+    }
+
+    body[data-tema="tarde"] .seletor-tema {
+      border-color: rgba(22, 58, 86, 0.18);
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d2d9e2;
+      border-radius: 8px;
+      background: #fff;
+      color: #172a44;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    select:focus-visible {
+      outline: 3px solid #3273bd;
+      outline-offset: 3px;
+    }
   </style>
 </head>
-<body>
-  <div class="sol"></div>
-  <h1>Olá, mundo!</h1>
-  <p>Página de teste do repositório test-2.</p>
+<body data-tema="por-do-sol">
+  <main>
+    <div class="astro" aria-hidden="true"></div>
+    <h1>Olá, mundo!</h1>
+    <p>Página de teste do repositório test-2.</p>
+
+    <div class="seletor-tema">
+      <label for="tema">Escolha o tema</label>
+      <select id="tema" name="tema">
+        <option value="tarde">Tarde</option>
+        <option value="por-do-sol" selected>Pôr do sol</option>
+        <option value="noite">Noite</option>
+      </select>
+    </div>
+  </main>
+
+  <script>
+    const seletorTema = document.getElementById('tema');
+    const temasDisponiveis = new Set(Array.from(seletorTema.options, (opcao) => opcao.value));
+
+    try {
+      const temaSalvo = localStorage.getItem('test-2-tema');
+      if (temasDisponiveis.has(temaSalvo)) {
+        seletorTema.value = temaSalvo;
+        document.body.dataset.tema = temaSalvo;
+      }
+    } catch (erro) {
+      // O seletor continua funcionando mesmo sem acesso ao armazenamento.
+    }
+
+    seletorTema.addEventListener('change', () => {
+      const tema = seletorTema.value;
+      document.body.dataset.tema = tema;
+
+      try {
+        localStorage.setItem('test-2-tema', tema);
+      } catch (erro) {
+        // A escolha ainda vale para a página atual.
+      }
+    });
+  </script>
 </body>
 </html>
